@@ -1,0 +1,79 @@
+# ================================
+# Core Python
+# ================================
+python-dotenv
+pydantic
+pydantic-settings
+
+# ================================
+# LLM / LangChain / Agentic AI
+# ================================
+langchain
+langchain-core
+langchain-community
+langchain-groq
+langgraph
+
+# ================================
+# Embeddings / Vector Database
+# ================================
+sentence-transformers
+chromadb
+
+# ================================
+# Document Processing / PDF
+# ================================
+pymupdf
+pymupdf4llm
+pypdf
+
+# ================================
+# OCR
+# ================================
+pytesseract
+Pillow
+
+# ================================
+# Data Processing
+# ================================
+pandas
+numpy
+
+# ================================
+# Backend API
+# ================================
+fastapi
+uvicorn[standard]
+python-multipart
+
+# ================================
+# Frontend / Dashboard
+# ================================
+streamlit
+
+# ================================
+# Database
+# ================================
+sqlalchemy
+
+# ================================
+# HTTP / API Utilities
+# ================================
+requests
+httpx
+
+# ================================
+# Testing
+# ================================
+pytest
+pytest-asyncio
+
+# ================================
+# Data Generation
+# ================================
+faker
+
+# ================================
+# Utilities
+# ================================
+typing-extensions
