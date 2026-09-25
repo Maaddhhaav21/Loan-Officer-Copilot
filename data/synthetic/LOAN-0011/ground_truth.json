@@ -1,0 +1,32 @@
+{
+    "loan_id": "LOAN-0011",
+    "scenario": "clean",
+    "borrower": {
+        "name": "John Carter"
+    },
+    "income": {
+        "application_annual": 96000.0,
+        "verified_annual": 96000.0,
+        "verified_monthly": 8000.0
+    },
+    "debts": {
+        "monthly": 1200.0
+    },
+    "dti": {
+        "percentage": 15.0,
+        "threshold": 43.0
+    },
+    "assets": {
+        "verified": 87500.0,
+        "declared": 87500.0
+    },
+    "property": {
+        "loan_amount": 420000.0,
+        "application_value": 500000.0,
+        "appraised_value": 500000.0
+    },
+    "expected_flags": [],
+    "expected_conditions": [],
+    "missing_documents": [],
+    "expected_status": "pass"
+}

@@ -1,0 +1,38 @@
+{
+    "loan_id": "LOAN-0018",
+    "scenario": "income_dti_discrepancy",
+    "borrower": {
+        "name": "John Carter"
+    },
+    "income": {
+        "application_annual": 120000,
+        "verified_annual": 96000.0,
+        "verified_monthly": 8000.0
+    },
+    "debts": {
+        "monthly": 4000.0
+    },
+    "dti": {
+        "percentage": 50.0,
+        "threshold": 43.0
+    },
+    "assets": {
+        "verified": 87500.0,
+        "declared": 87500.0
+    },
+    "property": {
+        "loan_amount": 420000.0,
+        "application_value": 500000.0,
+        "appraised_value": 500000.0
+    },
+    "expected_flags": [
+        "income_discrepancy",
+        "high_dti"
+    ],
+    "expected_conditions": [
+        "Verify stated annual income against supporting documents.",
+        "Debt-to-income ratio exceeds the configured threshold."
+    ],
+    "missing_documents": [],
+    "expected_status": "review"
+}

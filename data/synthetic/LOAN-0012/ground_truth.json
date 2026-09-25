@@ -1,0 +1,40 @@
+{
+    "loan_id": "LOAN-0012",
+    "scenario": "multiple_discrepancies",
+    "borrower": {
+        "name": "John Carter"
+    },
+    "income": {
+        "application_annual": 120000,
+        "verified_annual": 96000.0,
+        "verified_monthly": 8000.0
+    },
+    "debts": {
+        "monthly": 1200.0
+    },
+    "dti": {
+        "percentage": 15.0,
+        "threshold": 43.0
+    },
+    "assets": {
+        "verified": 87500.0,
+        "declared": 125000
+    },
+    "property": {
+        "loan_amount": 420000.0,
+        "application_value": 500000.0,
+        "appraised_value": 500000.0
+    },
+    "expected_flags": [
+        "income_discrepancy",
+        "asset_discrepancy",
+        "employment_inconsistency"
+    ],
+    "expected_conditions": [
+        "Verify stated annual income against supporting documents.",
+        "Declared assets differ from verified account balances.",
+        "Employer name differs between application and supporting documents."
+    ],
+    "missing_documents": [],
+    "expected_status": "review"
+}
