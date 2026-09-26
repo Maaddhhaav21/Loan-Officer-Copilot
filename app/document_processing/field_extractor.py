@@ -1,11 +1,21 @@
 import re
 
-from app.schemas.documents import DocumentType, DocumentExtraction, ExtractedField
+from app.schemas.documents import (
+    DocumentType,
+    DocumentExtraction,
+    ExtractedField,
+)
 
 
-def extract_money(text: str, label: str) -> float | None:
+def extract_money(
+    text: str,
+    label: str,
+) -> float | None:
 
-    pattern = rf"{re.escape(label)}\s*\$?\s*([\d,]+(?:\.\d{{1,2}})?)"
+    pattern = (
+        rf"{re.escape(label)}\s*\$?\s*"
+        rf"([\d,]+(?:\.\d{{1,2}})?)"
+    )
 
     match = re.search(
         pattern,
@@ -21,7 +31,10 @@ def extract_money(text: str, label: str) -> float | None:
     )
 
 
-def extract_text_value(text: str, label: str) -> str | None:
+def extract_text_value(
+    text: str,
+    label: str,
+) -> str | None:
 
     pattern = rf"{re.escape(label)}\s*(.+)"
 
@@ -128,6 +141,28 @@ def extract_fields(
 
         add_field(
             fields,
+            "previous_employer",
+            extract_text_value(
+                text,
+                "Previous Employer:",
+            ),
+            0.95,
+            document_id,
+        )
+
+        add_field(
+            fields,
+            "previous_employment_end",
+            extract_text_value(
+                text,
+                "Previous Employment End:",
+            ),
+            0.95,
+            document_id,
+        )
+
+        add_field(
+            fields,
             "annual_income",
             extract_money(
                 text,
@@ -202,6 +237,17 @@ def extract_fields(
                 "Savings:",
             ),
             0.90,
+            document_id,
+        )
+
+        add_field(
+            fields,
+            "declared_assets",
+            extract_money(
+                text,
+                "Total Declared Assets:",
+            ),
+            0.95,
             document_id,
         )
 
@@ -422,8 +468,6 @@ def extract_fields(
             0.95,
             document_id,
         )
-
-        # Look for unexplained cash deposit
 
         cash_deposit = re.search(
             r"CASH DEPOSIT\s+\+?\$?([\d,]+(?:\.\d{1,2})?)",

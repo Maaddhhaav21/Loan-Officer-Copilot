@@ -59,6 +59,76 @@ def create_employment_condition(
     )
 
 
+def create_document_condition(
+    result: VerificationResult,
+    condition_id: str,
+    title: str,
+) -> UnderwritingCondition | None:
+
+    if result.passed:
+        return None
+
+    return UnderwritingCondition(
+        condition_id=condition_id,
+        title=title,
+        description=result.description,
+        severity=Severity.HIGH,
+        source_documents=result.source_documents,
+        rule_id=condition_id,
+    )
+
+
+def create_deposit_condition(
+    result: VerificationResult,
+) -> UnderwritingCondition | None:
+
+    if result.passed:
+        return None
+
+    return UnderwritingCondition(
+        condition_id="DEP-001",
+        title="Unexplained deposit",
+        description=result.description,
+        severity=Severity.HIGH,
+        source_documents=result.source_documents,
+        rule_id="DEP-001",
+    )
+
+
+def create_employment_gap_condition(
+    result: VerificationResult,
+) -> UnderwritingCondition | None:
+
+    if result.passed:
+        return None
+
+    return UnderwritingCondition(
+        condition_id="EMP-002",
+        title="Employment gap identified",
+        description=result.description,
+        severity=Severity.MEDIUM,
+        source_documents=result.source_documents,
+        rule_id="EMP-002",
+    )
+
+
+def create_property_condition(
+    result: VerificationResult,
+) -> UnderwritingCondition | None:
+
+    if result.passed:
+        return None
+
+    return UnderwritingCondition(
+        condition_id="PROP-001",
+        title="Property value discrepancy",
+        description=result.description,
+        severity=Severity.HIGH,
+        source_documents=result.source_documents,
+        rule_id="PROP-001",
+    )
+
+
 def create_dti_condition(
     dti: DTIResult,
 ) -> UnderwritingCondition | None:

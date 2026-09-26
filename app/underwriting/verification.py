@@ -22,7 +22,6 @@ def verify_income(
     if paystub_annual_income is not None:
         source_documents.append("pay_stub.pdf")
 
-    # We need at least two sources to verify income.
     available_values = [
         value
         for value in [
@@ -34,7 +33,6 @@ def verify_income(
     ]
 
     if len(available_values) < 2:
-
         return VerificationResult(
             check_name="income_verification",
             passed=False,
@@ -42,7 +40,6 @@ def verify_income(
             source_documents=source_documents,
         )
 
-    # Use W-2 and pay stubs as the supporting income sources.
     supporting_values = [
         value
         for value in [
@@ -52,12 +49,9 @@ def verify_income(
         if value is not None
     ]
 
-    # Calculate supporting income.
     verified_income = sum(supporting_values) / len(supporting_values)
 
-    # Compare application income with verified income.
     if application_income is None:
-
         return VerificationResult(
             check_name="income_verification",
             passed=False,
@@ -67,11 +61,9 @@ def verify_income(
 
     difference = abs(application_income - verified_income)
 
-    # Allow a small tolerance for rounding.
     tolerance = 100.0
 
     if difference <= tolerance:
-
         return VerificationResult(
             check_name="income_verification",
             passed=True,
@@ -95,6 +87,7 @@ def verify_income(
         source_documents=source_documents,
     )
 
+
 def verify_assets(
     declared_assets: float | None,
     verified_assets: float | None,
@@ -108,7 +101,6 @@ def verify_assets(
     documents = source_documents or []
 
     if declared_assets is None or verified_assets is None:
-
         return VerificationResult(
             check_name="asset_verification",
             passed=False,
@@ -120,11 +112,9 @@ def verify_assets(
         declared_assets - verified_assets
     )
 
-    # Small tolerance for rounding.
     tolerance = 100.0
 
     if difference <= tolerance:
-
         return VerificationResult(
             check_name="asset_verification",
             passed=True,
@@ -147,6 +137,7 @@ def verify_assets(
         ),
         source_documents=documents,
     )
+
 
 def verify_employment(
     application_employer: str | None,
@@ -209,4 +200,204 @@ def verify_employment(
             f"{', '.join(supporting_employers)}."
         ),
         source_documents=documents,
+    )
+
+
+def verify_required_documents(
+    required_documents: list[str],
+    available_documents: list[str],
+) -> list[VerificationResult]:
+    """
+    Check whether required loan documents are present.
+    """
+
+    results = []
+
+    available_set = set(available_documents)
+
+    document_rules = {
+        "w2.pdf": (
+            "document_w2",
+            "Required W-2 document is missing.",
+        ),
+        "bank_statement_02.pdf": (
+            "document_bank_statement",
+            "Required bank statement is missing.",
+        ),
+        "tax_return.pdf": (
+            "document_tax_return",
+            "Required tax return is missing.",
+        ),
+        "pay_stub_02.pdf": (
+            "document_pay_stub",
+            "Required pay stub is missing.",
+        ),
+        "appraisal.pdf": (
+            "document_appraisal",
+            "Required appraisal is missing.",
+        ),
+    }
+
+    for document_name in required_documents:
+
+        if document_name not in document_rules:
+            continue
+
+        check_name, description = document_rules[document_name]
+
+        if document_name in available_set:
+            results.append(
+                VerificationResult(
+                    check_name=check_name,
+                    passed=True,
+                    description=(
+                        f"Required document '{document_name}' "
+                        "is present."
+                    ),
+                    source_documents=[document_name],
+                )
+            )
+        else:
+            results.append(
+                VerificationResult(
+                    check_name=check_name,
+                    passed=False,
+                    description=description,
+                    source_documents=[],
+                )
+            )
+
+    return results
+
+
+def verify_unexplained_deposit(
+    cash_deposits: list[tuple[str, float]],
+) -> VerificationResult:
+    """
+    Detect large cash deposits that require sourcing.
+    """
+
+    source_documents = [
+        document_name
+        for document_name, _ in cash_deposits
+    ]
+
+    large_deposits = [
+        (document_name, amount)
+        for document_name, amount in cash_deposits
+        if amount >= 10000
+    ]
+
+    if not large_deposits:
+        return VerificationResult(
+            check_name="deposit_verification",
+            passed=True,
+            description="No large unexplained deposits were identified.",
+            source_documents=source_documents,
+        )
+
+    descriptions = []
+
+    for document_name, amount in large_deposits:
+        descriptions.append(
+            f"${amount:,.2f} cash deposit in {document_name}"
+        )
+
+    return VerificationResult(
+        check_name="deposit_verification",
+        passed=False,
+        description=(
+            "Large unexplained deposit requires sourcing: "
+            + ", ".join(descriptions)
+        ),
+        source_documents=source_documents,
+    )
+
+
+def verify_employment_gap(
+    employment_start: str | None,
+    previous_employment_end: str | None,
+) -> VerificationResult:
+    """
+    Detect a gap between previous employment and current employment.
+    """
+
+    if not employment_start or not previous_employment_end:
+        return VerificationResult(
+            check_name="employment_gap",
+            passed=True,
+            description="No documented employment gap was identified.",
+            source_documents=[],
+        )
+
+    return VerificationResult(
+        check_name="employment_gap",
+        passed=False,
+        description=(
+            f"Employment history contains a gap between "
+            f"{previous_employment_end} and {employment_start}."
+        ),
+        source_documents=[
+            "loan_application.pdf",
+            "employment_history.pdf",
+        ],
+    )
+
+
+def verify_property_value(
+    application_value: float | None,
+    appraised_value: float | None,
+) -> VerificationResult:
+    """
+    Compare the property value on the application
+    against the appraisal.
+    """
+
+    if application_value is None or appraised_value is None:
+        return VerificationResult(
+            check_name="property_value_verification",
+            passed=False,
+            description="Insufficient property value documentation.",
+            source_documents=[
+                "loan_application.pdf",
+                "appraisal.pdf",
+            ],
+        )
+
+    difference = abs(
+        application_value - appraised_value
+    )
+
+    tolerance = 100.0
+
+    if difference <= tolerance:
+        return VerificationResult(
+            check_name="property_value_verification",
+            passed=True,
+            description=(
+                f"Application property value "
+                f"(${application_value:,.2f}) "
+                f"is consistent with the appraised value "
+                f"(${appraised_value:,.2f})."
+            ),
+            source_documents=[
+                "loan_application.pdf",
+                "appraisal.pdf",
+            ],
+        )
+
+    return VerificationResult(
+        check_name="property_value_verification",
+        passed=False,
+        description=(
+            f"Application property value "
+            f"(${application_value:,.2f}) "
+            f"differs from the appraised value "
+            f"(${appraised_value:,.2f}) "
+            f"by ${difference:,.2f}."
+        ),
+        source_documents=[
+            "loan_application.pdf",
+            "appraisal.pdf",
+        ],
     )
